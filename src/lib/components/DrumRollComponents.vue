@@ -2,8 +2,10 @@
   <div class="">
     <div class="">
       <input type="text" v-model="text" @click="openModal" />
-      <div v-if="isActive" class="modal-background">
-        <p class="text">モーダル</p>
+      <div v-if="isActive" class="modal">
+        <div class="modal-content">
+          <p class="text">モーダル</p>
+        </div>
       </div>
     </div>
   </div>
@@ -31,10 +33,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.modal-background {
+.modal {
   background-color: black;
   height: 30%;
+}
 
+.modal-content {
   > .text {
     color: white;
   }
