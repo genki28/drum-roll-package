@@ -2,18 +2,21 @@
   <img alt="Vue logo" src="./assets/logo.png" />
   <DrumRollComponents />
   <div>
-    <p>テスト</p>
+    <p>スライダーテスト</p>
+    <!-- <TestSliderComponents /> -->
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import DrumRollComponents from "./lib/components/DrumRollComponents.vue";
+// import TestSliderComponents from "./lib/components/TestSliderComponents.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     DrumRollComponents,
+    // TestSliderComponents,
   },
 });
 </script>

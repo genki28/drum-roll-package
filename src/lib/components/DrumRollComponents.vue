@@ -1,25 +1,25 @@
 <template>
   <div class="">
     <div class="input">
-      <input type="text" v-model="text" @click="openModal" />
+      <input type="text" :value="year + month + day" @click="openModal" />
     </div>
     <transition name="modal">
       <div v-if="isActive" class="modal">
         <div class="modal-content">
           <div class="roll-flex">
-            <div class="year-container">
-              <div v-for="(year, key) in years" :key="key">
-                <p class="year">{{ year }}</p>
+            <div class="year-container slider">
+              <div v-for="(y, key) in years" :key="key">
+                <p class="year" @click="year = y.toString()">{{ y }}</p>
               </div>
             </div>
-            <div class="year-container">
-              <div v-for="(month, key) in months" :key="key">
-                <p class="year">{{ month }}</p>
+            <div class="year-container slider">
+              <div v-for="(m, key) in months" :key="key">
+                <p class="year" @click="month = m.toString()">{{ m }}</p>
               </div>
             </div>
-            <div class="year-container">
-              <div v-for="(day, key) in days" :key="key">
-                <p class="year">{{ day }}</p>
+            <div class="year-container slider">
+              <div v-for="(d, key) in days" :key="key">
+                <p class="year" @click="day = d.toString()">{{ d }}</p>
               </div>
             </div>
           </div>
@@ -40,7 +40,9 @@ export default defineComponent({
     const years = _.range(1970, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
     const months = _.range(1, 13); // rangeの性質上12が消えてしまうため
     const days = _.range(1, 32); // rangeの性質上31が消えてしまうため
-
+    const year = ref<string>("");
+    const month = ref<string>("");
+    const day = ref<string>("");
     const openModal = () => {
       isActive.value = !isActive.value;
     };
@@ -48,6 +50,9 @@ export default defineComponent({
     return {
       text,
       years,
+      year,
+      month,
+      day,
       months,
       days,
       openModal,
@@ -100,13 +105,34 @@ export default defineComponent({
 }
 
 .year-container {
-  overflow: scroll;
-  height: 145px;
+  // overflow: scroll;
+  height: 200px;
   width: calc(100% / 3);
 }
 
 .year {
   color: white;
+}
+
+.slider {
+  scroll-snap-type: y mandatory;
+  position: relative;
+  // width: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  // overflow-scrolling: touch;
+}
+
+.slider > div {
+  scroll-snap-align: start;
+
+  color: #fff;
+  font-size: 150%;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 // @keyframes fadeup {
