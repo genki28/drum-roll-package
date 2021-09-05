@@ -47,6 +47,7 @@ export default defineComponent({
       isActive.value = !isActive.value;
     };
 
+    // スクロール位置を取得すれば良いのではないか？;
     return {
       text,
       years,
