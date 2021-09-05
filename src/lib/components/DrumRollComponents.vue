@@ -48,6 +48,7 @@ export default defineComponent({
     };
 
     // スクロール位置を取得すれば良いのではないか？;
+    // https://tech.bita.jp/article/41のようにカスタム directiveを作って、スクロール量をはかり、要素の大きさ(height)分が動いたら各yearやmonthやdayをプラスしていく！
     return {
       text,
       years,
