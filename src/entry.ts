@@ -10,4 +10,6 @@ Object.entries(component).forEach(([componentName, component]) => {
   }
 });
 
+// TODO: このファイル内でappに対してdirectiveの設定する必要あるのではないか？
+
 export default plugin;
