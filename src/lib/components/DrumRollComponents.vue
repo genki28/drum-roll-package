@@ -1,3 +1,6 @@
+<docs>
+備忘録：TODO: @click残しておく？？
+</docs>
 <template>
   <div class="">
     <div class="input">
@@ -7,19 +10,19 @@
       <div v-if="isActive" class="modal">
         <div class="modal-content">
           <div class="roll-flex">
-            <div class="year-container slider">
-              <div v-for="(y, key) in years" :key="key">
-                <p class="year" @click="year = y.toString()">{{ y }}</p>
+            <div @scroll="yearHandler" class="year-container slider">
+              <div class="year" v-for="(y, key) in years" :key="key">
+                <p class="text" @click="year = y.toString()">{{ y }}</p>
               </div>
             </div>
-            <div class="year-container slider">
-              <div v-for="(m, key) in months" :key="key">
-                <p class="year" @click="month = m.toString()">{{ m }}</p>
+            <div @scroll="monthHandler" class="year-container slider">
+              <div class="year" v-for="(m, key) in months" :key="key">
+                <p class="text" @click="month = m.toString()">{{ m }}</p>
               </div>
             </div>
-            <div class="year-container slider">
-              <div v-for="(d, key) in days" :key="key">
-                <p class="year" @click="day = d.toString()">{{ d }}</p>
+            <div @scroll="dayHandler" class="year-container slider">
+              <div class="year" v-for="(d, key) in days" :key="key">
+                <p class="text" @click="day = d.toString()">{{ d }}</p>
               </div>
             </div>
           </div>
@@ -37,18 +40,62 @@ export default defineComponent({
   setup() {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
-    const years = _.range(1970, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
-    const months = _.range(1, 13); // rangeの性質上12が消えてしまうため
-    const days = _.range(1, 32); // rangeの性質上31が消えてしまうため
-    const year = ref<string>("");
-    const month = ref<string>("");
-    const day = ref<string>("");
+    const years: (number | string)[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
+    // 見た目上、ダミーデータを入れる
+    // TODO: pushの方は入れてしまうと最後までスクロールできちゃうから考えないといけない。
+    years.unshift("");
+    years.push("");
+    const months: (number | string)[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
+    months.unshift("");
+    months.push("");
+    const days: (number | string)[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
+    days.unshift("");
+    days.push("");
+    // TODO: 初期値はとりあえずテキトー
+    const year = ref<string>(years[1].toString());
+    const month = ref<string>(months[1].toString());
+    const day = ref<string>(days[1].toString());
     const openModal = () => {
       isActive.value = !isActive.value;
     };
+    // TODO: 初期値はテキトー。というようりもこの変数いる？？
+    const cellHeight = ref<number>(81); // TODO: とりあえずマジックナンバーで81を設定しておく
+    const yearScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
+    const monthScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
+    const dayScrollNumber = ref<number>(0);
 
-    // スクロール位置を取得すれば良いのではないか？;
-    // https://tech.bita.jp/article/41のようにカスタム directiveを作って、スクロール量をはかり、要素の大きさ(height)分が動いたら各yearやmonthやdayをプラスしていく！
+    // ここの型ってなんだろう?
+    // TODO: とりあえず全てfunction分けておく
+    const yearHandler = (e: any) => {
+      const data = e.target.scrollTop;
+      const number = Math.floor(data / cellHeight.value); // TODO: Math.floor大丈夫？？
+      if (number !== yearScrollNumber.value) {
+        yearScrollNumber.value = number;
+        // 0はダミーのため +1 する
+        year.value = years[number + 1].toString();
+      }
+    };
+
+    const monthHandler = (e: any) => {
+      const data = e.target.scrollTop;
+      const number = Math.floor(data / cellHeight.value); // TODO :Math.floor大丈夫？？ & ここはマジックnumberではなく要素から取り出したい.
+      if (number !== monthScrollNumber.value) {
+        monthScrollNumber.value = number;
+        // 0はダミーのため +1 する
+        month.value = months[number + 1].toString();
+      }
+    }
+
+    const dayHandler = (e: any) => {
+      const data = e.target.scrollTop;
+      const number = Math.floor(data / cellHeight.value);
+      if (number !== dayScrollNumber.value) {
+        dayScrollNumber.value = number;
+        // 0はダミーのため +1 する
+        day.value = days[number + 1].toString();
+      }
+    }
+
     return {
       text,
       years,
@@ -57,8 +104,11 @@ export default defineComponent({
       day,
       months,
       days,
-      openModal,
       isActive,
+      yearHandler,
+      monthHandler,
+      dayHandler,
+      openModal,
     };
   },
 });
@@ -113,6 +163,7 @@ export default defineComponent({
 }
 
 .year {
+  height: 81px;
   color: white;
 }
 
