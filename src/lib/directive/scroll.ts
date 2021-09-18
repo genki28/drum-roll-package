@@ -10,11 +10,14 @@ import Vue, { DirectiveBinding } from "vue";
 //   window.addEventListener("scroll", f)
 // }
 
-export const scrollDirective = function(el: HTMLElement, binding: DirectiveBinding) {
-    const f = function (evt: any) {
-      if (binding.value(evt, el)) {
-        window.removeEventListener("scroll", f)
-      }
+export const scrollDirective = function (
+  el: HTMLElement,
+  binding: DirectiveBinding
+) {
+  const f = function (evt: any) {
+    if (binding.value(evt, el)) {
+      window.removeEventListener("scroll", f);
     }
-    window.addEventListener("scroll", f)
-}
+  };
+  window.addEventListener("scroll", f);
+};
