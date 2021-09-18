@@ -4,23 +4,23 @@
 <template>
   <div class="">
     <div class="input">
-      <input type="text" :value="year + month + day" @click="openModal" />
+      <input type="text" :value="`${year}-${month}-${day}`" @click="openModal" />
     </div>
     <transition name="modal">
-      <div v-if="isActive" class="modal">
+      <div v-show="isActive" class="modal">
         <div class="modal-content">
           <div class="roll-flex">
-            <div @scroll="yearHandler" class="year-container slider">
+            <div @scroll="yearHandler" class="year-container slider" ref="yearScroller">
               <div class="year" v-for="(y, key) in years" :key="key">
                 <p class="text" @click="year = y.toString()">{{ y }}</p>
               </div>
             </div>
-            <div @scroll="monthHandler" class="year-container slider">
+            <div @scroll="monthHandler" class="year-container slider" ref="monthScroller">
               <div class="year" v-for="(m, key) in months" :key="key">
                 <p class="text" @click="month = m.toString()">{{ m }}</p>
               </div>
             </div>
-            <div @scroll="dayHandler" class="year-container slider">
+            <div @scroll="dayHandler" class="year-container slider" ref="dayScroller">
               <div class="year" v-for="(d, key) in days" :key="key">
                 <p class="text" @click="day = d.toString()">{{ d }}</p>
               </div>
@@ -33,11 +33,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import _ from "lodash";
 
+type Props = {
+  yearValue?: number;
+  monthValue?: number;
+  dayValue?: number;
+}
+
 export default defineComponent({
-  setup() {
+  props: {
+    yearValue: {
+      type: Number,
+      required: false,
+    },
+    monthValue: {
+      type: Number,
+      required: false,
+    },
+    dayValue: {
+      type: Number,
+      required: false,
+    },
+  },
+  setup(props: Props) {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
     const years: (number | string)[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
@@ -52,17 +72,27 @@ export default defineComponent({
     days.unshift("");
     days.push("");
     // TODO: 初期値はとりあえずテキトー
-    const year = ref<string>(years[1].toString());
-    const month = ref<string>(months[1].toString());
-    const day = ref<string>(days[1].toString());
+    const year = ref<string|number>(years[1].toString());
+    const month = ref<string|number>(months[1].toString());
+    const day = ref<string|number>(days[1].toString());
     const openModal = () => {
       isActive.value = !isActive.value;
+      if (!isActive.value) return;
+      // こんな分岐入れなきゃいけないの嫌だなぁ
+      setTimeout(() => {
+        if (!yearScroller.value) return;
+        yearScroller.value.scrollTo(1000, 1000);
+      }, 1000);
     };
     // TODO: 初期値はテキトー。というようりもこの変数いる？？
     const cellHeight = ref<number>(81); // TODO: とりあえずマジックナンバーで81を設定しておく
     const yearScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
     const monthScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
     const dayScrollNumber = ref<number>(0);
+
+    const yearScroller = ref<HTMLElement>();
+    const monthScroller = ref<HTMLElement>();
+    const dayScroller = ref<HTMLElement>();
 
     // ここの型ってなんだろう?
     // TODO: とりあえず全てfunction分けておく
@@ -105,6 +135,9 @@ export default defineComponent({
       months,
       days,
       isActive,
+      yearScroller,
+      monthScroller,
+      dayScroller,
       yearHandler,
       monthHandler,
       dayHandler,
