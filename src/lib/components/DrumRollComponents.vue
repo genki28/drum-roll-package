@@ -4,23 +4,39 @@
 <template>
   <div class="">
     <div class="input">
-      <input type="text" :value="`${year}-${month}-${day}`" @click="openModal" />
+      <input
+        type="text"
+        :value="`${year}-${month}-${day}`"
+        @click="openModal"
+      />
     </div>
-    <transition name="modal">
+    <transition name="modal" appear>
       <div v-show="isActive" class="modal">
         <div class="modal-content">
           <div class="roll-flex">
-            <div @scroll="yearHandler" class="year-container slider" ref="yearScroller">
+            <div
+              @scroll="yearHandler"
+              class="year-container slider"
+              ref="yearScroller"
+            >
               <div class="year" v-for="(y, key) in years" :key="key">
                 <p class="text" @click="year = y.toString()">{{ y }}</p>
               </div>
             </div>
-            <div @scroll="monthHandler" class="year-container slider" ref="monthScroller">
+            <div
+              @scroll="monthHandler"
+              class="year-container slider"
+              ref="monthScroller"
+            >
               <div class="year" v-for="(m, key) in months" :key="key">
                 <p class="text" @click="month = m.toString()">{{ m }}</p>
               </div>
             </div>
-            <div @scroll="dayHandler" class="year-container slider" ref="dayScroller">
+            <div
+              @scroll="dayHandler"
+              class="year-container slider"
+              ref="dayScroller"
+            >
               <div class="year" v-for="(d, key) in days" :key="key">
                 <p class="text" @click="day = d.toString()">{{ d }}</p>
               </div>
@@ -40,27 +56,33 @@ type Props = {
   yearValue?: number;
   monthValue?: number;
   dayValue?: number;
-}
+};
 
 export default defineComponent({
   props: {
     yearValue: {
       type: Number,
       required: false,
+      default: 1995,
     },
     monthValue: {
       type: Number,
       required: false,
+      default: 6,
     },
     dayValue: {
       type: Number,
       required: false,
+      default: 15,
     },
   },
   setup(props: Props) {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
-    const years: (number | string)[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
+    const years: (number | string)[] = _.range(
+      1900,
+      new Date().getFullYear() + 1
+    ); // 配列作成時に最後のものがなくなってしまうため
     // 見た目上、ダミーデータを入れる
     // TODO: pushの方は入れてしまうと最後までスクロールできちゃうから考えないといけない。
     years.unshift("");
@@ -72,17 +94,26 @@ export default defineComponent({
     days.unshift("");
     days.push("");
     // TODO: 初期値はとりあえずテキトー
-    const year = ref<string|number>(years[1].toString());
-    const month = ref<string|number>(months[1].toString());
-    const day = ref<string|number>(days[1].toString());
+    const year = ref<string | number>(props.yearValue ?? years[1].toString());
+    const month = ref<string | number>(
+      props.monthValue ?? months[1].toString()
+    );
+    const day = ref<string | number>(props.dayValue ?? days[1].toString());
     const openModal = () => {
       isActive.value = !isActive.value;
       if (!isActive.value) return;
-      // こんな分岐入れなきゃいけないの嫌だなぁ
+      // こんな分岐入れなきゃいけないの嫌だなぁ（なんかsetTimeOutを入れなきゃいけない・・・？）
+      // TODO: リッチなスクロールにしたい！
       setTimeout(() => {
-        if (!yearScroller.value) return;
-        yearScroller.value.scrollTo(1000, 1000);
-      }, 1000);
+        if (!yearScroller.value || !monthScroller.value || !dayScroller.value)
+          return;
+        const yearPixel = (Number(year.value) - 1900) * 81;
+        const monthPixel = (Number(month.value) - 1) * 81;
+        const dayPixel = (Number(day.value) - 1) * 81;
+        yearScroller.value.scrollTo(0, yearPixel);
+        monthScroller.value.scrollTo(0, monthPixel);
+        dayScroller.value.scrollTo(0, dayPixel);
+      }, 1);
     };
     // TODO: 初期値はテキトー。というようりもこの変数いる？？
     const cellHeight = ref<number>(81); // TODO: とりあえずマジックナンバーで81を設定しておく
@@ -114,7 +145,7 @@ export default defineComponent({
         // 0はダミーのため +1 する
         month.value = months[number + 1].toString();
       }
-    }
+    };
 
     const dayHandler = (e: any) => {
       const data = e.target.scrollTop;
@@ -124,7 +155,7 @@ export default defineComponent({
         // 0はダミーのため +1 する
         day.value = days[number + 1].toString();
       }
-    }
+    };
 
     return {
       text,

@@ -4,6 +4,6 @@ import { scrollDirective } from "./lib/directive/scroll";
 
 const app = createApp(App);
 app.directive("drum-scroll", {
-  created: scrollDirective // TODO: createdでOK???
-})
+  created: scrollDirective, // TODO: createdでOK???
+});
 app.mount("#app");
