@@ -70,7 +70,7 @@ export default defineComponent({
     yearValue: {
       type: Number,
       required: false,
-      default: 1900,
+      default: 1980,
     },
     monthValue: {
       type: Number,
@@ -92,8 +92,11 @@ export default defineComponent({
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
     const years: number[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
+    years.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
     const months: number[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
+    months.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
     const days: number[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
+    days.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
 
     // TODO: 初期値はとりあえずテキトー
     const year = ref<number>(props.yearValue);
@@ -233,10 +236,10 @@ export default defineComponent({
     height: 81px;
     color: white;
 
-    // &:first-child {
-    //   // 最初の1つが一番上に来るようにするため 81px（1セル分）をとる
-    // ちなみにbeforeもダメでした
-    // }
+    &:first-child {
+      height: 81px;
+      visibility: hidden;
+    }
 
     &:last-child {
       // 最後の1つを選択できるようにするための処理
