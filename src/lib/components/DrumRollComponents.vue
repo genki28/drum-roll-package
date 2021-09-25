@@ -1,8 +1,12 @@
 <docs>
 備忘録：TODO: @click残しておく？？
+year, month, dayがそれぞれ渡されないパターンとdateが渡されているパターンの2つがありえる
+閏年や31、30などの制御が必要。今、2020/05/31にいたとして、06に移動したら30から離れる必要ありそう。ただ、その計算自体はスクロールし終わってからで良いと思われる。
+→再度スクロールし始めたら30日にリセットするのはしなくて良いと思われる。
+誕生日をイメージしていたため選択できる年は今年までにしている。 → 将来的にはもっと先まで選べるようにする必要あり。
 </docs>
 <template>
-  <div class="">
+  <div class="drum-roll-component">
     <div class="input">
       <input
         type="text"
@@ -16,28 +20,28 @@
           <div class="roll-flex">
             <div
               @scroll="yearHandler"
-              class="year-container slider"
+              class="modal-container slider"
               ref="yearScroller"
             >
-              <div class="year" v-for="(y, key) in years" :key="key">
+              <div class="box" v-for="(y, key) in years" :key="key">
                 <p class="text" @click="year = y.toString()">{{ y }}</p>
               </div>
             </div>
             <div
               @scroll="monthHandler"
-              class="year-container slider"
+              class="modal-container slider"
               ref="monthScroller"
             >
-              <div class="year" v-for="(m, key) in months" :key="key">
+              <div class="box" v-for="(m, key) in months" :key="key">
                 <p class="text" @click="month = m.toString()">{{ m }}</p>
               </div>
             </div>
             <div
               @scroll="dayHandler"
-              class="year-container slider"
+              class="modal-container slider"
               ref="dayScroller"
             >
-              <div class="year" v-for="(d, key) in days" :key="key">
+              <div class="box" v-for="(d, key) in days" :key="key">
                 <p class="text" @click="day = d.toString()">{{ d }}</p>
               </div>
             </div>
@@ -49,13 +53,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, ref, SetupContext } from "vue";
 import _ from "lodash";
 
 type Props = {
   yearValue?: number;
   monthValue?: number;
   dayValue?: number;
+  dateValue: Date;
 };
 
 export default defineComponent({
@@ -63,7 +68,7 @@ export default defineComponent({
     yearValue: {
       type: Number,
       required: false,
-      default: 1995,
+      default: 1980,
     },
     monthValue: {
       type: Number,
@@ -75,8 +80,13 @@ export default defineComponent({
       required: false,
       default: 15,
     },
+    dateValue: {
+      type: Date,
+      required: false,
+      default: new Date("1980-6-15"), // この辺どうしようか...
+    },
   },
-  setup(props: Props) {
+  setup(props: Props, ctx: SetupContext) {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
     const years: (number | string)[] = _.range(
@@ -86,13 +96,11 @@ export default defineComponent({
     // 見た目上、ダミーデータを入れる
     // TODO: pushの方は入れてしまうと最後までスクロールできちゃうから考えないといけない。
     years.unshift("");
-    years.push("");
     const months: (number | string)[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
     months.unshift("");
-    months.push("");
     const days: (number | string)[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
     days.unshift("");
-    days.push("");
+
     // TODO: 初期値はとりあえずテキトー
     const year = ref<string | number>(props.yearValue ?? years[1].toString());
     const month = ref<string | number>(
@@ -131,9 +139,11 @@ export default defineComponent({
       const data = e.target.scrollTop;
       const number = Math.floor(data / cellHeight.value); // TODO: Math.floor大丈夫？？
       if (number !== yearScrollNumber.value) {
+        const diff = number - yearScrollNumber.value;
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
         year.value = years[number + 1].toString();
+        ctx.emit("update:dateValue", props.dateValue.getFullYear() - diff);
       }
     };
 
@@ -220,15 +230,20 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-.year-container {
+.modal-container {
   // overflow: scroll;
   height: 200px;
   width: calc(100% / 3);
-}
 
-.year {
-  height: 81px;
-  color: white;
+  > .box {
+    height: 81px;
+    color: white;
+
+    &:last-child {
+      // 最後の1つを選択できるようにするための処理
+      margin-bottom: 38px; // height 200px - (81px * 2 -> 2要素のため)
+    }
+  }
 }
 
 .slider {
