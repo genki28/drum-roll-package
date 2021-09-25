@@ -4,6 +4,7 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
 閏年や31、30などの制御が必要。今、2020/05/31にいたとして、06に移動したら30から離れる必要ありそう。ただ、その計算自体はスクロールし終わってからで良いと思われる。
 →再度スクロールし始めたら30日にリセットするのはしなくて良いと思われる。
 誕生日をイメージしていたため選択できる年は今年までにしている。 → 将来的にはもっと先まで選べるようにする必要あり。
+閏年などについて、日付の配列末尾にそれ日付以上のものがあれば減らす、なければ増やす
 </docs>
 <template>
   <div class="drum-roll-component">
@@ -55,11 +56,12 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
 <script lang="ts">
 import { defineComponent, ref, SetupContext } from "vue";
 import _ from "lodash";
+import { calcDayInMonth } from "@/lib/utils/utilFunc";
 
 type Props = {
-  yearValue?: number;
-  monthValue?: number;
-  dayValue?: number;
+  yearValue: number;
+  monthValue: number;
+  dayValue: number;
   dateValue: Date;
 };
 
@@ -68,7 +70,7 @@ export default defineComponent({
     yearValue: {
       type: Number,
       required: false,
-      default: 1980,
+      default: 1900,
     },
     monthValue: {
       type: Number,
@@ -89,35 +91,26 @@ export default defineComponent({
   setup(props: Props, ctx: SetupContext) {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
-    const years: (number | string)[] = _.range(
-      1900,
-      new Date().getFullYear() + 1
-    ); // 配列作成時に最後のものがなくなってしまうため
-    // 見た目上、ダミーデータを入れる
-    // TODO: pushの方は入れてしまうと最後までスクロールできちゃうから考えないといけない。
-    years.unshift("");
-    const months: (number | string)[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
-    months.unshift("");
-    const days: (number | string)[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
-    days.unshift("");
+    const years: number[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
+    const months: number[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
+    const days: number[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
 
     // TODO: 初期値はとりあえずテキトー
-    const year = ref<string | number>(props.yearValue ?? years[1].toString());
-    const month = ref<string | number>(
-      props.monthValue ?? months[1].toString()
-    );
-    const day = ref<string | number>(props.dayValue ?? days[1].toString());
+    const year = ref<number>(props.yearValue);
+    const month = ref<number>(props.monthValue);
+    const day = ref<number>(props.dayValue);
     const openModal = () => {
       isActive.value = !isActive.value;
       if (!isActive.value) return;
       // こんな分岐入れなきゃいけないの嫌だなぁ（なんかsetTimeOutを入れなきゃいけない・・・？）
       // TODO: リッチなスクロールにしたい！
       setTimeout(() => {
-        if (!yearScroller.value || !monthScroller.value || !dayScroller.value)
+        if (!yearScroller.value || !monthScroller.value || !dayScroller.value) {
           return;
-        const yearPixel = (Number(year.value) - 1900) * 81;
-        const monthPixel = (Number(month.value) - 1) * 81;
-        const dayPixel = (Number(day.value) - 1) * 81;
+        }
+        const yearPixel = (year.value - 1900) * 81;
+        const monthPixel = (month.value - 1) * 81;
+        const dayPixel = (day.value - 1) * 81;
         yearScroller.value.scrollTo(0, yearPixel);
         monthScroller.value.scrollTo(0, monthPixel);
         dayScroller.value.scrollTo(0, dayPixel);
@@ -142,7 +135,7 @@ export default defineComponent({
         const diff = number - yearScrollNumber.value;
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
-        year.value = years[number + 1].toString();
+        year.value = years[number + 1];
         ctx.emit("update:dateValue", props.dateValue.getFullYear() - diff);
       }
     };
@@ -153,8 +146,9 @@ export default defineComponent({
       if (number !== monthScrollNumber.value) {
         monthScrollNumber.value = number;
         // 0はダミーのため +1 する
-        month.value = months[number + 1].toString();
+        month.value = months[number + 1];
       }
+      const lastDay = calcDayInMonth(year.value, month.value);
     };
 
     const dayHandler = (e: any) => {
@@ -163,7 +157,7 @@ export default defineComponent({
       if (number !== dayScrollNumber.value) {
         dayScrollNumber.value = number;
         // 0はダミーのため +1 する
-        day.value = days[number + 1].toString();
+        day.value = days[number + 1];
       }
     };
 
@@ -238,6 +232,11 @@ export default defineComponent({
   > .box {
     height: 81px;
     color: white;
+
+    // &:first-child {
+    //   // 最初の1つが一番上に来るようにするため 81px（1セル分）をとる
+    // ちなみにbeforeもダメでした
+    // }
 
     &:last-child {
       // 最後の1つを選択できるようにするための処理
