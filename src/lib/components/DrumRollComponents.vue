@@ -170,9 +170,9 @@ export default defineComponent({
       // TODO: ここは何秒か経ってからで良いのでは？？
       const lastDay = calcDayInMonth(year.value, month.value);
       const dayArrayLast = getLastArrayValue<number>(days.value); // いい変数名をください。
-      // TODO: 先に計算をして、0より大きいか考えても良いが、結局spliceの方はマイナスなら-1をかけなければならないので分かりにくくなりそうだから以下のようにしておく
-      if (lastDay > dayArrayLast) {
-        const diff = lastDay - dayArrayLast;
+      const diff = lastDay - dayArrayLast;
+
+      if (diff > 0) {
         // TODO: 計算後の月末が今よりも大きいため、配列に任意の数pushする必要がある。
         // TODO: めっちゃいけてないけどとりあえず以下のようにする
         for (let i = 1; i <= diff; i++) {
@@ -180,10 +180,9 @@ export default defineComponent({
         }
         return;
       }
-      if (lastDay < dayArrayLast) {
-        console.log(lastDay, dayArrayLast);
+      if (diff < 0) {
         // TODO: 計算後の月末が今よりも小さいため、配列から任意の数削除する必要がある。
-        days.value.splice(-1, dayArrayLast - lastDay);
+        days.value.splice(diff);
         return;
       }
     };
