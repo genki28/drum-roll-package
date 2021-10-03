@@ -4,17 +4,36 @@ Here is a sample component
 </docs>
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <DrumRollComponents />
+  <DrumRollComponents
+    v-model:yearValue="year"
+    v-model:monthValue="month"
+    v-model:dayValue="day"
+  />
+  <div>
+    <p class="title">親コンポーネント側</p>
+    <p>{{ year }}/{{ month }}/{{ day }}</p>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import DrumRollComponents from "./lib/components/DrumRollComponents.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     DrumRollComponents,
+  },
+  setup() {
+    const year = ref(1980);
+    const month = ref(6);
+    const day = ref(1);
+
+    return {
+      year,
+      month,
+      day,
+    };
   },
 });
 </script>
