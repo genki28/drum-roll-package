@@ -4,8 +4,8 @@ module.exports = {
       sass: {},
     },
   },
-  devServer: {
-    public: "https://ac11e222a25b.ngrok.io",
-    disableHostCheck: true,
-  },
+  // devServer: {
+  //   public: "https://ac11e222a25b.ngrok.io",
+  //   disableHostCheck: true,
+  // },
 };
