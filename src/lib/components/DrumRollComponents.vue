@@ -59,13 +59,7 @@ inputタグについては、readOnlyで大丈夫か？
 import { computed, defineComponent, ref, SetupContext } from "vue";
 import _ from "lodash";
 import { calcDayInMonth, getLastArrayValue } from "@/lib/utils/utilFunc";
-
-type Props = {
-  yearValue: number;
-  monthValue: number;
-  dayValue: number;
-  dateValue: Date;
-};
+import { PackageProps } from "@/lib/@types/packageTypes";
 
 export default defineComponent({
   props: {
@@ -90,7 +84,7 @@ export default defineComponent({
       default: new Date("1980-6-15"), // この辺どうしようか...
     },
   },
-  setup(props: Props, ctx: SetupContext) {
+  setup(props: PackageProps, ctx: SetupContext) {
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
     const years: number[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
