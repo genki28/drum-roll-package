@@ -152,23 +152,28 @@ export default defineComponent({
       const data = e.target.scrollTop;
       const number = Math.floor(data / cellHeight.value); // TODO: Math.floor大丈夫？？
       if (number !== yearScrollNumber.value) {
-        const diff = number - yearScrollNumber.value;
+        // const diff = number - yearScrollNumber.value;
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
         year.value = years[number + 1];
-        calcLastOfMonth();
-        ctx.emit("update:dateValue", props.dateValue.getFullYear() - diff);
+        setTimeout(() => {
+          // ここ、1秒待つとcomputedが反映されるため恐らく他に原因があると思われる。後日徹底調査。以前までは適切にできていたため、computedか処理が重いことが原因か？
+          calcLastOfMonth();
+        }, 1);
       }
     };
 
     const monthHandler = (e: any) => {
       const data = e.target.scrollTop;
-      const number = Math.floor(data / cellHeight.value); // TODO :Math.floor大丈夫？？ & ここはマジックnumberではなく要素から取り出したい.
+      const number = Math.floor(data / cellHeight.value); // TODO :Math.floor大丈夫？？
       if (number !== monthScrollNumber.value) {
         monthScrollNumber.value = number;
         // 0はダミーのため +1 する
         month.value = months[number + 1];
-        calcLastOfMonth();
+        setTimeout(() => {
+          // ここ、1秒待つとcomputedが反映されるため恐らく他に原因があると思われる。後日徹底調査。以前までは適切にできていたため、computedか処理が重いことが原因か？
+          calcLastOfMonth();
+        }, 1);
       }
     };
 
