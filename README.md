@@ -1,24 +1,41 @@
 # smart-drum-roll
 
-## Project setup
+For those who want to enter dates in a way other than the calendar...
+
+### Getting
+The first step when using smart-drum-roll-component is installing its npm package:
 ```
-npm install
+$ yarn add smart-drum-roll
 ```
 
-### Compiles and hot-reloads for development
+or
+
 ```
-npm run serve
+$ npm install smart-drum-roll
 ```
 
-### Compiles and minifies for production
+### How to use
+main.ts
 ```
-npm run build
+import { createApp } from "vue";
+import App from "./App.vue";
+import SmartDrumRoll from "smart-drum-roll";
+import "smart-drum-roll/dist/smart-drum-roll.css"
+
+createApp(App)
+  .use(SmartDrumRoll)
+  .mount("#app")
 ```
 
-### Lints and fixes files
+App.vue
 ```
-npm run lint
+<template>
+  <SmartDrumRoll
+    v-model:yearValue="year" // default:1980
+    v-model:monthValue="month" // default: 6
+    v-model:dayValue="day" // default: 15
+  />
+</template>
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Sample
