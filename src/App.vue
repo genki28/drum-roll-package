@@ -17,7 +17,7 @@ Here is a sample component
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import DrumRollComponents from "./lib/components/DrumRollComponents.vue";
+import DrumRollComponents from "./lib/components/DrumRollComponent.vue";
 
 export default defineComponent({
   name: "App",
