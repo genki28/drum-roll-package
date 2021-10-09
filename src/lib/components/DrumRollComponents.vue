@@ -17,7 +17,7 @@ inputタグについては、readOnlyで大丈夫か？
         readonly
       />
     </div>
-    <transition name="modal" appear>
+    <transition name="fade" mode="out-in" appear>
       <div v-show="isActive" class="modal">
         <div class="modal-content">
           <div class="roll-flex">
@@ -119,9 +119,6 @@ export default defineComponent({
         ctx.emit("update:dayValue", val);
       },
     });
-    // const year = ref<number>(props.yearValue);
-    // const month = ref<number>(props.monthValue);
-    // const day = ref<number>(props.dayValue);
     const openModal = () => {
       isActive.value = !isActive.value;
       if (!isActive.value) return;
@@ -244,22 +241,28 @@ export default defineComponent({
   animation-iteration-count: infinite;
 }
 
-.modal-enter,
-.modal-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
-.modal-enter-to,
-.modal-leave {
+.fade-enter-to,
+.fade-leave {
   opacity: 1;
 }
 
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 1s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+  transform: translateY(0px);
 }
 
-.modal-content {
+.fade-enter-from,
+.fade-leave-to {
+  transform: translateY(80px);
+}
+
+.fade-content {
   > .text {
     color: white;
   }
