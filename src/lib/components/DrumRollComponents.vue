@@ -5,6 +5,7 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
 →再度スクロールし始めたら30日にリセットするのはしなくて良いと思われる。
 誕生日をイメージしていたため選択できる年は今年までにしている。 → 将来的にはもっと先まで選べるようにする必要あり。
 閏年などについて、日付の配列末尾にそれ日付以上のものがあれば減らす、なければ増やす
+inputタグについては、readOnlyで大丈夫か？
 </docs>
 <template>
   <div class="drum-roll-component">
@@ -13,6 +14,7 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
         type="text"
         :value="`${year}-${month}-${day}`"
         @click="openModal"
+        readonly
       />
     </div>
     <transition name="modal" appear>
@@ -54,7 +56,7 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, SetupContext } from "vue";
+import { computed, defineComponent, ref, SetupContext } from "vue";
 import _ from "lodash";
 import { calcDayInMonth, getLastArrayValue } from "@/lib/utils/utilFunc";
 
@@ -99,9 +101,27 @@ export default defineComponent({
     days.value.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
 
     // TODO: 初期値はとりあえずテキトー
-    const year = ref<number>(props.yearValue);
-    const month = ref<number>(props.monthValue);
-    const day = ref<number>(props.dayValue);
+    const year = computed<number>({
+      get: () => props.yearValue,
+      set: (val) => {
+        ctx.emit("update:yearValue", val);
+      },
+    });
+    const month = computed<number>({
+      get: () => props.monthValue,
+      set: (val) => {
+        ctx.emit("update:monthValue", val);
+      },
+    });
+    const day = computed<number>({
+      get: () => props.dayValue,
+      set: (val) => {
+        ctx.emit("update:dayValue", val);
+      },
+    });
+    // const year = ref<number>(props.yearValue);
+    // const month = ref<number>(props.monthValue);
+    // const day = ref<number>(props.dayValue);
     const openModal = () => {
       isActive.value = !isActive.value;
       if (!isActive.value) return;
