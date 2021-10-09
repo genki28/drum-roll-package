@@ -1,5 +1,5 @@
 // 方定義は後で見ておこう
-// custome directiveを入れたところにそれぞれscrollイベントを持たせることができる
+// custom directiveを入れたところにそれぞれscrollイベントを持たせることができる
 import { DirectiveBinding } from "vue";
 
 export const scrollDirective = function (

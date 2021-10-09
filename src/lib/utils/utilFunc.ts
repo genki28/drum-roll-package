@@ -1,4 +1,4 @@
-const thirtyDayInMonthArray = [4, 6, 9, 11]
+const thirtyDayInMonthArray = [4, 6, 9, 11];
 
 export const isLeapYear = (year: number): boolean => {
   /**
