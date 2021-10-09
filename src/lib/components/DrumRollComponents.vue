@@ -56,7 +56,7 @@ year, month, dayがそれぞれ渡されないパターンとdateが渡されて
 <script lang="ts">
 import { defineComponent, ref, SetupContext } from "vue";
 import _ from "lodash";
-import { calcDayInMonth } from "@/lib/utils/utilFunc";
+import { calcDayInMonth, getLastArrayValue } from "@/lib/utils/utilFunc";
 
 type Props = {
   yearValue: number;
@@ -95,8 +95,8 @@ export default defineComponent({
     years.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
     const months: number[] = _.range(1, 13); // rangeの性質上12が消えてしまうため
     months.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
-    const days: number[] = _.range(1, 32); // rangeの性質上31が消えてしまうため
-    days.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
+    const days = ref<number[]>(_.range(1, 32)); // rangeの性質上31が消えてしまうため
+    days.value.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
 
     // TODO: 初期値はとりあえずテキトー
     const year = ref<number>(props.yearValue);
@@ -139,6 +139,7 @@ export default defineComponent({
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
         year.value = years[number + 1];
+        calcLastOfMonth();
         ctx.emit("update:dateValue", props.dateValue.getFullYear() - diff);
       }
     };
@@ -150,8 +151,8 @@ export default defineComponent({
         monthScrollNumber.value = number;
         // 0はダミーのため +1 する
         month.value = months[number + 1];
+        calcLastOfMonth();
       }
-      const lastDay = calcDayInMonth(year.value, month.value);
     };
 
     const dayHandler = (e: any) => {
@@ -160,7 +161,30 @@ export default defineComponent({
       if (number !== dayScrollNumber.value) {
         dayScrollNumber.value = number;
         // 0はダミーのため +1 する
-        day.value = days[number + 1];
+        day.value = days.value[number + 1];
+      }
+    };
+
+    const calcLastOfMonth = () => {
+      // TODO: めっちゃ重いので後で必ず直す必要がある
+      // TODO: ここは何秒か経ってからで良いのでは？？
+      const lastDay = calcDayInMonth(year.value, month.value);
+      const dayArrayLast = getLastArrayValue<number>(days.value); // いい変数名をください。
+      // TODO: 先に計算をして、0より大きいか考えても良いが、結局spliceの方はマイナスなら-1をかけなければならないので分かりにくくなりそうだから以下のようにしておく
+      if (lastDay > dayArrayLast) {
+        const diff = lastDay - dayArrayLast;
+        // TODO: 計算後の月末が今よりも大きいため、配列に任意の数pushする必要がある。
+        // TODO: めっちゃいけてないけどとりあえず以下のようにする
+        for (let i = 1; i <= diff; i++) {
+          days.value.push(dayArrayLast + i);
+        }
+        return;
+      }
+      if (lastDay < dayArrayLast) {
+        console.log(lastDay, dayArrayLast);
+        // TODO: 計算後の月末が今よりも小さいため、配列から任意の数削除する必要がある。
+        days.value.splice(-1, dayArrayLast - lastDay);
+        return;
       }
     };
 

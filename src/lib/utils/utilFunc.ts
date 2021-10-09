@@ -27,3 +27,12 @@ export const calcDayInMonth = (year: number, month: number): number => {
 
   return 31;
 };
+
+/**
+ * 最後の要素を抜き出す
+ * @param array
+ * @returns
+ */
+export const getLastArrayValue = <T>(array: T[]): T => {
+  return array[array.length - 1];
+};
