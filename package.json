@@ -2,7 +2,7 @@
   "name": "smart-drum-roll",
   "version": "0.1.0-demo",
   "license": "MIT",
-  "main": "dist/drum-roll-component.common.js",
+  "main": "./dist/drum-roll-component.common.js",
   "unpkg": "./dist/drum-roll-component.umd.min.js",
   "jsdelivr": "./dist/drum-roll-component.umd.min.js",
   "types": "./drum-roll.d.ts",
