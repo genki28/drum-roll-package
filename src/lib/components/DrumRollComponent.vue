@@ -85,6 +85,7 @@ export default defineComponent({
     },
   },
   setup(props: PackageProps, ctx: SetupContext) {
+    //TODO: dateValueから取得する場合もあるため、その処理も入れておくべき
     const text = ref<string>("");
     const isActive = ref<boolean>(false);
     const years: number[] = _.range(1900, new Date().getFullYear() + 1); // 配列作成時に最後のものがなくなってしまうため
@@ -95,6 +96,13 @@ export default defineComponent({
     days.value.unshift(0); // 最初の要素を選択するため挿入。なお、margin-topなどcssだけでは対応不可であった。
 
     // TODO: 初期値はとりあえずテキトー
+    // TODO: dateValueを更新する方法は課題。
+    computed<Date>({
+      get: () => props.dateValue,
+      set: (val) => {
+        ctx.emit("update:dateValue", val);
+      },
+    });
     const year = computed<number>({
       get: () => props.yearValue,
       set: (val) => {
@@ -146,7 +154,6 @@ export default defineComponent({
       const data = e.target.scrollTop;
       const number = Math.floor(data / cellHeight.value); // TODO: Math.floor大丈夫？？
       if (number !== yearScrollNumber.value) {
-        // const diff = number - yearScrollNumber.value;
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
         year.value = years[number + 1];
