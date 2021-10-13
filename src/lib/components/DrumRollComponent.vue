@@ -20,6 +20,9 @@ inputタグについては、readOnlyで大丈夫か？
     <transition name="fade" mode="out-in" appear>
       <div v-show="isActive" class="modal">
         <div class="modal-content">
+          <div class="button-area">
+            <p class="done" @click="closeModal">DONE</p>
+          </div>
           <div class="roll-flex">
             <div
               @scroll="yearHandler"
@@ -121,6 +124,16 @@ export default defineComponent({
         ctx.emit("update:dayValue", val);
       },
     });
+    const cellHeight = ref<number>(81); // TODO: とりあえず81を設定しておく
+    const yearScrollNumber = ref<number>(0);
+    const monthScrollNumber = ref<number>(0);
+    const dayScrollNumber = ref<number>(0);
+
+    const yearScroller = ref<HTMLElement>();
+    const monthScroller = ref<HTMLElement>();
+    const dayScroller = ref<HTMLElement>();
+
+    // ここ、使われ方的に命名変える！
     const openModal = () => {
       isActive.value = !isActive.value;
       if (!isActive.value) return;
@@ -130,29 +143,24 @@ export default defineComponent({
         if (!yearScroller.value || !monthScroller.value || !dayScroller.value) {
           return;
         }
-        const yearPixel = (year.value - 1900) * 81;
-        const monthPixel = (month.value - 1) * 81;
-        const dayPixel = (day.value - 1) * 81;
+        const yearPixel = (year.value - 1900) * cellHeight.value;
+        const monthPixel = (month.value - 1) * cellHeight.value;
+        const dayPixel = (day.value - 1) * cellHeight.value;
         yearScroller.value.scrollTo(0, yearPixel);
         monthScroller.value.scrollTo(0, monthPixel);
         dayScroller.value.scrollTo(0, dayPixel);
       }, 1);
     };
-    // TODO: 初期値はテキトー。というようりもこの変数いる？？
-    const cellHeight = ref<number>(81); // TODO: とりあえずマジックナンバーで81を設定しておく
-    const yearScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
-    const monthScrollNumber = ref<number>(0); // TODO: 将来的には初期値を挿入する予定
-    const dayScrollNumber = ref<number>(0);
 
-    const yearScroller = ref<HTMLElement>();
-    const monthScroller = ref<HTMLElement>();
-    const dayScroller = ref<HTMLElement>();
+    const closeModal = () => {
+      isActive.value = false;
+    }
 
     // ここの型ってなんだろう?
     // TODO: とりあえず全てfunction分けておく
     const yearHandler = (e: any) => {
-      const data = e.target.scrollTop;
-      const number = Math.floor(data / cellHeight.value); // TODO: Math.floor大丈夫？？
+      const scrollTop = e.target.scrollTop;
+      const number = Math.floor(scrollTop / cellHeight.value); // TODO: Math.floor大丈夫？？
       if (number !== yearScrollNumber.value) {
         yearScrollNumber.value = number;
         // 0はダミーのため +1 する
@@ -165,8 +173,8 @@ export default defineComponent({
     };
 
     const monthHandler = (e: any) => {
-      const data = e.target.scrollTop;
-      const number = Math.floor(data / cellHeight.value); // TODO :Math.floor大丈夫？？
+      const scrollTop = e.target.scrollTop;
+      const number = Math.floor(scrollTop / cellHeight.value); // TODO :Math.floor大丈夫？？
       if (number !== monthScrollNumber.value) {
         monthScrollNumber.value = number;
         // 0はダミーのため +1 する
@@ -179,8 +187,8 @@ export default defineComponent({
     };
 
     const dayHandler = (e: any) => {
-      const data = e.target.scrollTop;
-      const number = Math.floor(data / cellHeight.value);
+      const scrollTop = e.target.scrollTop;
+      const number = Math.floor(scrollTop / cellHeight.value);
       if (number !== dayScrollNumber.value) {
         dayScrollNumber.value = number;
         // 0はダミーのため +1 する
@@ -204,7 +212,7 @@ export default defineComponent({
         return;
       }
       if (diff < 0) {
-        // TODO: 計算後の月末が今よりも小さいため、配列から任意の数削除する必要がある。
+        // 計算後の月末が今よりも小さいため、配列から任意の数削除する必要がある。
         days.value.splice(diff);
         return;
       }
@@ -226,6 +234,7 @@ export default defineComponent({
       monthHandler,
       dayHandler,
       openModal,
+      closeModal,
     };
   },
 });
@@ -241,7 +250,7 @@ export default defineComponent({
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 30%;
+  height: 35%;
   background-color: black;
   // animation-name: fadeup;
   animation-iteration-count: infinite;
@@ -277,6 +286,21 @@ export default defineComponent({
 .roll-flex {
   display: flex;
   justify-content: space-between;
+}
+
+.modal-content {
+  height: 225px;
+}
+
+.button-area {
+  height: 25px;
+  padding-right: 5px;
+  text-align: right;
+
+  > .done {
+    display: inline;
+    color: #fff;
+  }
 }
 
 .modal-container {
@@ -331,4 +355,9 @@ export default defineComponent({
 //     transform: translateY(0);
 //   }
 // }
+
+// TODO: 念の為打ち消しは最低限にしておく
+p {
+  margin: 0;
+}
 </style>
