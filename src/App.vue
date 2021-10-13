@@ -10,7 +10,7 @@ Here is a sample component
     v-model:dayValue="day"
   />
   <div>
-    <p class="title">親コンポーネント側</p>
+    <p class="title">parent component data</p>
     <p>{{ year }}/{{ month }}/{{ day }}</p>
   </div>
 </template>
