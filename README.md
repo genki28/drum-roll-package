@@ -38,4 +38,5 @@ App.vue
 </template>
 ```
 
-## Sample
+## Sample Demo
+https://user-images.githubusercontent.com/60918687/137174800-1f59094a-b08f-4156-95d1-47a139b03722.gif
