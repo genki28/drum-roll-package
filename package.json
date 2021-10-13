@@ -2,9 +2,9 @@
   "name": "smart-drum-roll",
   "version": "0.1.0-demo",
   "license": "MIT",
-  "main": "./dist/drum-roll-component.common.js",
-  "unpkg": "./dist/drum-roll-component.umd.min.js",
-  "jsdelivr": "./dist/drum-roll-component.umd.min.js",
+  "main": "./dist/smart-drum-roll.common.js",
+  "unpkg": "./dist/smart-drum-roll.umd.min.js",
+  "jsdelivr": "./dist/smart-drum-roll.umd.min.js",
   "types": "./drum-roll.d.ts",
   "files": [
     "dist/*",
@@ -15,7 +15,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name drum-roll-component ./src/entry.ts",
+    "build-bundle": "vue-cli-service build --target lib --name smart-drum-roll ./src/entry.ts",
     "prepublish": "yarn build-bundle"
   },
   "dependencies": {
