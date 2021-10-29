@@ -1,1 +1,1 @@
-export { default as DrumRoll } from "./components/DrumRollComponent.vue";
+export { default as SmartDrumRoll } from "./components/DrumRollComponent.vue";

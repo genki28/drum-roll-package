@@ -1,6 +1,6 @@
 {
   "name": "smart-drum-roll",
-  "version": "0.1.2-demo",
+  "version": "0.1.3-demo",
   "license": "MIT",
   "main": "./dist/smart-drum-roll.common.js",
   "unpkg": "./dist/smart-drum-roll.umd.min.js",

@@ -17,14 +17,23 @@ $ npm install smart-drum-roll
 ### How to use
 main.ts
 ```
-import { createApp } from "vue";
+import { createApp, h } from "vue";
 import App from "./App.vue";
 import SmartDrumRoll from "smart-drum-roll";
-import "smart-drum-roll/dist/smart-drum-roll.css"
+import "smart-drum-roll/dist/smart-drum-roll.css";
+import { scrollDirective } from "smart-drum-roll/src/lib/directive/scroll";
 
-createApp(App)
-  .use(SmartDrumRoll)
-  .mount("#app")
+const app = createApp({
+  render() {
+    return h(App);
+  },
+});
+
+app.directive("drum-scroll", {
+  created: scrollDirective,
+});
+app.use(SmartDrumRoll);
+app.mount("#app");
 ```
 
 App.vue
